@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I'm So Sorry! 🥺❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .heading-font {
+            font-family: 'Fredoka', cursive;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+        @keyframes pulse-gentle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        .animate-pulse-slow {
+            animation: pulse-gentle 2.5s ease-in-out infinite;
+        }
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatUp 6s linear infinite;
+            opacity: 0.7;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 relative">
+
+    <div id="heart-container"></div>
+
+    <main class="glass-card rounded-3xl p-6 md:p-8 max-w-lg w-full text-center relative z-10 transition-all duration-300">
+        
+        <!-- Audio & Header Controls -->
+        <div class="flex justify-between items-center mb-4">
+            <span class="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                Apology Note 💌
+            </span>
+            <button id="soundToggle" onclick="toggleSound()" class="bg-white/80 hover:bg-white text-pink-500 p-2.5 rounded-full shadow-sm transition hover:scale-110 flex items-center justify-center">
+                <i id="soundIcon" class="fas me-0 fa-volume-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <div class="relative w-44 h-44 mx-auto mb-4 animate-float flex items-center justify-center">
+            <svg id="mascotSvg" viewBox="0 0 200 200" class="w-full h-full drop-shadow-md transition-all duration-500">
+                <!-- Cute Bear / Bunny SVG Mascot -->
+                <circle cx="100" cy="115" r="55" fill="#fbcfe8" />
+                <!-- Ears -->
+                <circle cx="60" cy="65" r="22" fill="#fbcfe8" />
+                <circle cx="60" cy="65" r="12" fill="#f472b6" />
+                <circle cx="140" cy="65" r="22" fill="#fbcfe8" />
+                <circle cx="140" cy="65" r="12" fill="#f472b6" />
+                <!-- Cheeks -->
+                <circle cx="70" cy="120" r="10" fill="#f472b6" opacity="0.6" />
+                <circle cx="130" cy="120" r="10" fill="#f472b6" opacity="0.6" />
+                <!-- Eyes (Sad by default) -->
+                <path id="leftEye" d="M 75 102 Q 83 95 91 102" stroke="#475569" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+                <path id="rightEye" d="M 109 102 Q 117 95 125 102" stroke="#475569" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+                <!-- Tears -->
+                <ellipse id="tearLeft" cx="72" cy="112" rx="3" ry="5" fill="#60a5fa" class="animate-bounce" />
+                <!-- Mouth (Sad) -->
+                <path id="mascotMouth" d="M 92 125 Q 100 118 108 125" stroke="#475569" stroke-width="4" stroke-linecap="round" fill="none" />
+                <!-- Nose -->
+                <polygon points="96,110 104,110 100,115" fill="#475569" />
+                <!-- Paws holding heart -->
+                <path d="M 80 135 C 80 120, 120 120, 120 135" fill="none" />
+                <g id="mascotHeart" transform="translate(100, 140) scale(0.8)">
+                    <path d="M 0 -10 C -10 -25, -25 -5, 0 15 C 25 -5, 10 -25, 0 -10 Z" fill="#ef4444"/>
+                </g>
+            </svg>
+        </div>
+
+        <h1 id="mainTitle" class="heading-font text-3xl font-bold text-gray-800 mb-2">
+            I'm So Sorry, Daling! 🥺
+        </h1>
+        <p id="subTitle" class="text-gray-600 text-sm md:text-base mb-6 leading-relaxed">
+            I never meant to hurt you or make you sad. My world is so much brighter with you in it. Please forgive me?🥺
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 relative">
+            <button id="forgiveBtn" onclick="acceptApology()" class="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-rose-400 hover:from-pink-600 hover:to-rose-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-pink-300/50 transform hover:-translate-y-0.5 active:translate-y-0 transition duration-200 text-base animate-pulse-slow">
+                Forgive Me? 💖
+            </button>
+            <button id="madBtn" onmouseenter="dodgeButton()" onclick="dodgeButton()" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold py-3 px-6 rounded-full transition duration-200 text-sm">
+                Still Mad 😤
+            </button>
+        </div>
+
+        <div class="space-y-3 text-left">
+            <div class="border border-pink-100 rounded-2xl overflow-hidden bg-white/60 transition">
+                <button onclick="toggleNote('note1')" class="w-full p-3.5 text-left font-bold text-gray-700 flex justify-between items-center hover:bg-pink-50/50">
+                    <span class="flex items-center gap-2 text-sm md:text-base">
+                        <span class="text-pink-500">🌸</span> Why I'm Sorry
+                    </span>
+                    <i id="icon-note1" class="fas fa-chevron-down text-xs text-gray-400 transition-transform"></i>
+                </button>
+                <div id="note1" class="hidden p-4 pt-0 text-gray-600 text-xs md:text-sm leading-relaxed border-t border-pink-50">
+                    I messed up, and I truly apologize. You mean the absolute world to me, and seeing you upset hurts my heart. I promise to be more thoughtful, patient, and understanding. 💗
+                </div>
+            </div>
+
+            <div class="border border-pink-100 rounded-2xl overflow-hidden bg-white/60 transition">
+                <button onclick="toggleNote('note2')" class="w-full p-3.5 text-left font-bold text-gray-700 flex justify-between items-center hover:bg-pink-50/50">
+                    <span class="flex items-center gap-2 text-sm md:text-base">
+                        <span class="text-pink-500">🎀</span> 3 Promises To You
+                    </span>
+                    <i id="icon-note2" class="fas fa-chevron-down text-xs text-gray-400 transition-transform"></i>
+                </button>
+                <div id="note2" class="hidden p-4 pt-0 text-gray-600 text-xs md:text-sm leading-relaxed border-t border-pink-50">
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>I will always listen to you carefully.🥺</li>
+                        <li>I will be more careful and considerate! 🥺</li>
+                        <li>Extra warm hugs, attention, and support whenever you feel down. 🤗</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Sweet Message Modal/Overlay Container -->
+        <div id="thankYouCard" class="hidden mt-6 p-4 bg-pink-50 rounded-2xl border border-pink-200 text-pink-700 text-sm font-semibold animate-fade-in">
+            Yay! Thank you for forgiving me! You're the sweetest! 🥰 Let's go grab something delicious together! 🍰✨
+        </div>
+
+    </main>
+
+    <script>
+        // Sound synth setup using Web Audio API (Soft gentle chimes)
+        let soundEnabled = false;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleSound() {
+            initAudio();
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.className = 'fas fa-volume-high text-lg text-pink-500';
+                playChime(523.25); // C5
+            } else {
+                icon.className = 'fas fa-volume-xmark text-lg text-gray-400';
+            }
+        }
+
+        function playChime(freq) {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.2);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        // Floating Hearts Background Generator
+        function createFloatingHearts() {
+            const container = document.getElementById('heart-container');
+            const heartIcons = ['💖', '🌸', '✨', '💕', '🧸'];
+            
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                heart.style.animationDelay = (Math.random() * 5) + 's';
+                heart.style.fontSize = (Math.random() * 12 + 16) + 'px';
+                container.appendChild(heart);
+            }
+        }
+
+        // Toggle Accordion Notes
+        function toggleNote(id) {
+            playChime(440);
+            const note = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if (note.classList.contains('hidden')) {
+                note.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                note.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Shy Playful Dodge Button Logic
+        let dodgeCount = 0;
+        function dodgeButton() {
+            dodgeCount++;
+            playChime(329.63); // E4
+            const madBtn = document.getElementById('madBtn');
+            const forgiveBtn = document.getElementById('forgiveBtn');
+
+            if (dodgeCount < 5) {
+                const x = (Math.random() - 0.5) * 160;
+                const y = (Math.random() - 0.5) * 80;
+                madBtn.style.transform = `translate(${x}px, ${y}px)`;
+            } else {
+                // After multiple attempts, convert button
+                madBtn.innerText = "Okay, I forgive you! 💕";
+                madBtn.classList.remove('bg-gray-100', 'text-gray-600');
+                madBtn.classList.add('bg-pink-100', 'text-pink-600');
+                madBtn.style.transform = 'translate(0px, 0px)';
+                madBtn.onclick = acceptApology;
+            }
+        }
+
+        function acceptApology() {
+            playChime(659.25); // E5
+            setTimeout(() => playChime(783.99), 150); // G5
+
+            // Trigger Confetti Celebration
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#f472b6', '#fb7185', '#38bdf8', '#facc15']
+            });
+
+            // Update Text
+            document.getElementById('mainTitle').innerText = "Yayy! You Forgave Me! 🎉💖";
+            document.getElementById('subTitle').innerText = "You're the absolute best! I promise to make it up to you with extra cuddles and sweets!";
+            
+            // Show Card Note
+            document.getElementById('thankYouCard').classList.remove('hidden');
+
+            // Change Mascot Face to Happy
+            document.getElementById('leftEye').setAttribute('d', 'M 75 98 Q 83 108 91 98');
+            document.getElementById('rightEye').setAttribute('d', 'M 109 98 Q 117 108 125 98');
+            document.getElementById('mascotMouth').setAttribute('d', 'M 92 118 Q 100 128 108 118');
+            
+            const tear = document.getElementById('tearLeft');
+            if (tear) tear.style.display = 'none';
+
+            // Hide/Disable Buttons
+            document.getElementById('forgiveBtn').style.display = 'none';
+            document.getElementById('madBtn').style.display = 'none';
+        }
+
+        // Initialize on Load
+        window.onload = function() {
+            createFloatingHearts();
+        };
+    </script>
+</body>
+</html>
